@@ -164,14 +164,19 @@ def call_llm(prompt: str) -> Dict[str, Any]:
     if not MODEL_URL or not MODEL_KEY:
         raise HTTPException(500, "Set LLM_API_URL and LLM_API_KEY environment variables.")
     
-    # Ensure URL has protocol
-    api_url = MODEL_URL.strip()
+    # Ensure URL has protocol (strip whitespace first)
+    api_url = MODEL_URL.strip() if MODEL_URL else ""
+    
+    # Remove any leading/trailing whitespace and fix common issues
+    api_url = api_url.strip()
+    
+    # Only add https:// if it doesn't already have a protocol
     if api_url and not api_url.startswith("http://") and not api_url.startswith("https://"):
         api_url = f"https://{api_url}"
     
     # Validate URL format
-    if not api_url.startswith("http://") and not api_url.startswith("https://"):
-        raise HTTPException(500, f"Invalid LLM_API_URL format: '{MODEL_URL}'. Must start with http:// or https://")
+    if not api_url or (not api_url.startswith("http://") and not api_url.startswith("https://")):
+        raise HTTPException(500, f"Invalid LLM_API_URL format: '{MODEL_URL}'. Must be a valid URL starting with http:// or https://")
     
     headers = {"Authorization": f"Bearer {MODEL_KEY}"}
     
