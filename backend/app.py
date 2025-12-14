@@ -168,6 +168,17 @@ def call_llm(prompt: str) -> Dict[str, Any]:
         raise HTTPException(500, f"LLM call failed: {str(e)}")
 
 
+@app.get("/")
+def root():
+    """Root endpoint - redirects to docs."""
+    return {
+        "message": "Reasoning GPT API",
+        "docs": "/docs",
+        "health": "/health",
+        "solve": "/solve"
+    }
+
+
 @app.get("/health")
 def health():
     # Check if API keys are set
