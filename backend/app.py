@@ -100,14 +100,15 @@ def load_store() -> tuple[VectorStore, List[dict]]:
                 items = data.get("items", [])
                 
                 # Check if store is actually populated
-                if store and hasattr(store, 'index') and hasattr(store.index, 'ntotal'):
-                    if store.index.ntotal > 0 and len(items) > 0:
-                        print(f"Successfully loaded vector store with {store.index.ntotal} items")
+                try:
+                    ntotal = store.index.ntotal if hasattr(store, 'index') and hasattr(store.index, 'ntotal') else 0
+                    if ntotal > 0 and len(items) > 0:
+                        print(f"Successfully loaded vector store with {ntotal} items")
                         return store, items
                     else:
-                        print(f"Warning: Vector store file exists but is empty (ntotal={store.index.ntotal}, items={len(items)}). Rebuilding from JSONL...")
-                else:
-                    print(f"Warning: Vector store file exists but structure is invalid. Rebuilding from JSONL...")
+                        print(f"Warning: Vector store file exists but is empty (ntotal={ntotal}, items={len(items)}). Rebuilding from JSONL...")
+                except Exception as e:
+                    print(f"Warning: FAISS version mismatch or invalid store structure: {e}. Rebuilding from JSONL...")
         except Exception as e:
             print(f"Error loading vector store: {e}. Rebuilding from JSONL...")
     
@@ -120,6 +121,13 @@ def load_store() -> tuple[VectorStore, List[dict]]:
     
     print(f"Found {len(items)} items in JSONL. Building embeddings...")
     from retrieval.embed import embed
+    
+    # Check if embedding API is configured
+    embed_key = os.environ.get("EMBED_API_KEY")
+    if not embed_key:
+        print("ERROR: EMBED_API_KEY not set. Cannot rebuild vector store.")
+        return VectorStore(dim=1), []
+    
     texts = []
     for it in items:
         question = it.get("question", "")
@@ -132,7 +140,11 @@ def load_store() -> tuple[VectorStore, List[dict]]:
         texts.append(text)
     
     print("Generating embeddings...")
-    embeddings = embed(texts)
+    try:
+        embeddings = embed(texts)
+    except RuntimeError as e:
+        print(f"ERROR: {e}")
+        raise
     dim = len(embeddings[0])
     store = VectorStore(dim)
     store.add(embeddings, items)

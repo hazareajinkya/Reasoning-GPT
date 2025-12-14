@@ -21,6 +21,10 @@ def embed(texts: List[str]) -> List[List[float]]:
         json={"model": EMBED_MODEL, "input": texts},
         timeout=60,
     )
+    
+    if resp.status_code == 401:
+        raise RuntimeError(f"Embedding API authentication failed (401). Check EMBED_API_KEY. URL: {EMBED_API_URL}")
+    
     resp.raise_for_status()
     data = resp.json()
     
