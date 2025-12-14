@@ -4,8 +4,9 @@ from pathlib import Path
 from typing import Any, Dict, List
 
 import httpx
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 from retrieval.embed import embed
@@ -42,6 +43,36 @@ app.add_middleware(
     allow_headers=["*"],
     expose_headers=["*"],
 )
+
+# Add exception handler to ensure CORS headers are included in error responses
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    """Ensure CORS headers are included even in error responses."""
+    origin = request.headers.get("origin")
+    if origin and origin in allow_origins:
+        headers = {
+            "Access-Control-Allow-Origin": origin,
+            "Access-Control-Allow-Credentials": "true" if allow_creds else "false",
+        }
+    elif allow_origins == ["*"]:
+        headers = {
+            "Access-Control-Allow-Origin": "*",
+        }
+    else:
+        headers = {}
+    
+    if isinstance(exc, HTTPException):
+        return JSONResponse(
+            status_code=exc.status_code,
+            content={"detail": exc.detail},
+            headers=headers
+        )
+    else:
+        return JSONResponse(
+            status_code=500,
+            content={"detail": "Internal server error"},
+            headers=headers
+        )
 
 
 class SolveRequest(BaseModel):
