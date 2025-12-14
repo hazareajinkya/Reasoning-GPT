@@ -240,47 +240,51 @@ def call_llm(prompt: str) -> Dict[str, Any]:
         except:
             error_msg += f" - {e.response.text[:200]}"
         raise HTTPException(e.response.status_code, error_msg)
+    except Exception as e:
+        raise HTTPException(500, f"LLM call failed: {str(e)}")
+    
+    # Extract content from response
+    if "choices" in data:
+        choice = data["choices"][0]
+        content = choice["message"]["content"]
+        finish_reason = choice.get("finish_reason", "")
         
-        # Extract content from response
-        if "choices" in data:
-            choice = data["choices"][0]
-            content = choice["message"]["content"]
-            finish_reason = choice.get("finish_reason", "")
+        # Check if response was truncated
+        if finish_reason == "length":
+            print(f"WARNING: LLM response was truncated (finish_reason=length). Content length: {len(content)}")
+            print(f"Consider: 1) Using a model with higher token limit, 2) Making prompt more concise, 3) Splitting response")
+            # Try to extract what we have, but warn
+            content += "\n\n[NOTE: Response was truncated. The solution may be incomplete. Consider rephrasing the question or using a model with higher token limits.]"
+        
+        # Try to parse as JSON
+        import json
+        try:
+            llm_res = json.loads(content)
+            # Ensure all fields are strings (convert dicts/lists to strings)
+            result = {}
+            for key in ["direct", "step_by_step", "intuitive", "shortcut"]:
+                value = llm_res.get(key, "")
+                if isinstance(value, dict):
+                    # Convert dict to formatted string
+                    result[key] = "\n".join([f"{k}: {v}" for k, v in value.items()])
+                elif isinstance(value, list):
+                    # Convert list to string
+                    result[key] = "\n".join(str(item) for item in value)
+                else:
+                    result[key] = str(value) if value else ""
             
-            # Check if response was truncated
-            if finish_reason == "length":
-                print(f"WARNING: LLM response was truncated (finish_reason=length). Content length: {len(content)}")
-                print(f"Consider: 1) Using a model with higher token limit, 2) Making prompt more concise, 3) Splitting response")
-                # Try to extract what we have, but warn
-                content += "\n\n[NOTE: Response was truncated. The solution may be incomplete. Consider rephrasing the question or using a model with higher token limits.]"
+            # Log response lengths for debugging
+            print(f"Response lengths - direct: {len(result.get('direct', ''))}, step_by_step: {len(result.get('step_by_step', ''))}, intuitive: {len(result.get('intuitive', ''))}, shortcut: {len(result.get('shortcut', ''))}")
             
-            # Try to parse as JSON
-            import json
-            try:
-                llm_res = json.loads(content)
-                # Ensure all fields are strings (convert dicts/lists to strings)
-                result = {}
-                for key in ["direct", "step_by_step", "intuitive", "shortcut"]:
-                    value = llm_res.get(key, "")
-                    if isinstance(value, dict):
-                        # Convert dict to formatted string
-                        result[key] = "\n".join([f"{k}: {v}" for k, v in value.items()])
-                    elif isinstance(value, list):
-                        # Convert list to string
-                        result[key] = "\n".join(str(item) for item in value)
-                    else:
-                        result[key] = str(value) if value else ""
-                
-                # Log response lengths for debugging
-                print(f"Response lengths - direct: {len(result.get('direct', ''))}, step_by_step: {len(result.get('step_by_step', ''))}, intuitive: {len(result.get('intuitive', ''))}, shortcut: {len(result.get('shortcut', ''))}")
-                
-                return result
-            except json.JSONDecodeError as e:
-                print(f"WARNING: Failed to parse JSON response: {e}")
-                print(f"Response preview (first 500 chars): {content[:500]}")
-                # If not JSON, return as dict with content in all fields
-                return {"direct": content, "step_by_step": content, "intuitive": content, "shortcut": content}
-        return data
+            return result
+        except json.JSONDecodeError as e:
+            print(f"WARNING: Failed to parse JSON response: {e}")
+            print(f"Response preview (first 500 chars): {content[:500]}")
+            # If not JSON, return as dict with content in all fields
+            return {"direct": content, "step_by_step": content, "intuitive": content, "shortcut": content}
+    
+    # Fallback: return data as-is if no choices
+    return data
     except httpx.HTTPStatusError as e:
         raise HTTPException(e.response.status_code, f"LLM API error: {e.response.text}")
     except Exception as e:
