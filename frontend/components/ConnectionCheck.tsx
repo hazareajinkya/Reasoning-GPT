@@ -8,11 +8,12 @@ export default function ConnectionCheck() {
 
   useEffect(() => {
     const checkBackend = async () => {
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
       
       try {
-        const response = await fetch("http://localhost:8000/health", {
+        const response = await fetch(`${API_URL}/health`, {
           method: "GET",
           signal: controller.signal,
         });

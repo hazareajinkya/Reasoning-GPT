@@ -18,21 +18,24 @@ export default function Home() {
     setSolution(null);
 
     try {
+      // Get backend URL from environment variable or use localhost for development
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+      
       // Test backend connectivity first
       try {
-        const healthCheck = await fetch("http://localhost:8000/health", { method: "GET" });
+        const healthCheck = await fetch(`${API_URL}/health`, { method: "GET" });
         if (!healthCheck.ok) {
           throw new Error(`Backend health check failed: ${healthCheck.status}`);
         }
       } catch (healthErr: any) {
-        throw new Error(`Cannot connect to backend: ${healthErr.message}. Make sure backend is running on http://localhost:8000`);
+        throw new Error(`Cannot connect to backend: ${healthErr.message}. Make sure backend is running on ${API_URL}`);
       }
       
       // Create abort controller for timeout
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 240000); // 4 minute timeout
       
-      const response = await fetch("http://localhost:8000/solve", {
+      const response = await fetch(`${API_URL}/solve`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -91,7 +94,8 @@ export default function Home() {
       if (err.name === "AbortError" || err.name === "TimeoutError") {
         errorMessage = "Request timed out. The backend might be slow or unresponsive.";
       } else if (err.message?.includes("Failed to fetch") || err.message?.includes("NetworkError")) {
-        errorMessage = "Cannot connect to backend. Make sure the backend is running on http://localhost:8000";
+        const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+        errorMessage = `Cannot connect to backend. Make sure the backend is running on ${API_URL}`;
       } else if (err.message) {
         errorMessage = err.message;
       } else {
