@@ -244,11 +244,26 @@ def health():
 @app.post("/solve", response_model=SolveResponse)
 def solve(req: SolveRequest):
     """Solve a reasoning problem using RAG."""
-    if not ITEMS:
-        raise HTTPException(400, "Dataset empty. Run: python3 scripts/build_vector_store.py")
+    # Check if vector store is loaded
+    try:
+        store_ntotal = STORE.index.ntotal if hasattr(STORE, 'index') and hasattr(STORE.index, 'ntotal') else 0
+    except Exception:
+        store_ntotal = 0
     
-    if STORE.index.ntotal == 0:
-        raise HTTPException(400, "Vector store is empty. Build it first.")
+    if not ITEMS or len(ITEMS) == 0:
+        raise HTTPException(
+            400, 
+            f"Dataset empty. Vector store file exists: {STORE_PATH.exists() if STORE_PATH else False}. "
+            f"Path: {STORE_PATH}. Please ensure vector store is built and committed to Git."
+        )
+    
+    if store_ntotal == 0:
+        raise HTTPException(
+            400, 
+            f"Vector store is empty (ntotal={store_ntotal}). "
+            f"Store file exists: {STORE_PATH.exists() if STORE_PATH else False}. "
+            f"Please rebuild the vector store."
+        )
 
     # Embed query
     try:
