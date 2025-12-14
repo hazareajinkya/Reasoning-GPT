@@ -164,11 +164,11 @@ def call_llm(prompt: str) -> Dict[str, Any]:
     if not MODEL_URL or not MODEL_KEY:
         raise HTTPException(500, "Set LLM_API_URL and LLM_API_KEY environment variables.")
     
-    # Ensure URL has protocol (strip whitespace first)
+    # Ensure URL has protocol (strip whitespace and fix common issues)
     api_url = MODEL_URL.strip() if MODEL_URL else ""
     
-    # Remove any leading/trailing whitespace and fix common issues
-    api_url = api_url.strip()
+    # Remove any leading/trailing whitespace, equals signs, or other formatting issues
+    api_url = api_url.strip().lstrip("=").strip()
     
     # Only add https:// if it doesn't already have a protocol
     if api_url and not api_url.startswith("http://") and not api_url.startswith("https://"):
