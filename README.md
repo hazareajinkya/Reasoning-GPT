@@ -104,16 +104,32 @@ python3 scripts/review_extractions.py
 └── test_rag.py             # Test RAG pipeline
 ```
 
+## Screenshots
+
+![Application Interface](docs/screenshots/homepage.png)
+*Main application interface showing problem input and solution display*
+
+![Step-by-Step Solution](docs/screenshots/solution-step-by-step.png)
+*Detailed step-by-step solution with progressive tables*
+
+![Solution Views](docs/screenshots/solution-views.png)
+*Multiple solution approaches: Direct, Step-by-Step, Intuitive, and Shortcut*
+
+> 📸 **Note**: Add your screenshots to the `docs/screenshots/` folder. See [docs/screenshots/README.md](docs/screenshots/README.md) for naming conventions.
+
 ## Current Status
 
 ✅ **Completed:**
-- 30 circular tracks problems in seed dataset
+- 30+ circular tracks and DILR problems in seed dataset
 - RAG pipeline (embedding + retrieval + prompt)
 - FastAPI backend with `/solve` endpoint
+- Next.js frontend with modern UI
 - Cost-optimized extraction from YouTube videos
+- Multiple solution approaches (Direct, Step-by-Step, Intuitive, Shortcut)
 
 🚧 **Next Steps:**
-- Frontend (Next.js + Tailwind)
 - Add more topics (LR, DI, other Quant topics)
 - Expand dataset to 100-300 problems
+- User authentication and analytics
+- Rate limiting and cost controls
 
