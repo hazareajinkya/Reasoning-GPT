@@ -285,10 +285,6 @@ def call_llm(prompt: str) -> Dict[str, Any]:
     
     # Fallback: return data as-is if no choices
     return data
-    except httpx.HTTPStatusError as e:
-        raise HTTPException(e.response.status_code, f"LLM API error: {e.response.text}")
-    except Exception as e:
-        raise HTTPException(500, f"LLM call failed: {str(e)}")
 
 
 @app.get("/")
