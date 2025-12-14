@@ -19,7 +19,12 @@ export default function Home() {
 
     try {
       // Get backend URL from environment variable or use localhost for development
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+      let API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+      
+      // Ensure URL has protocol (add https:// if missing)
+      if (API_URL && !API_URL.startsWith("http://") && !API_URL.startsWith("https://")) {
+        API_URL = `https://${API_URL}`;
+      }
       
       // Log for debugging (remove in production if needed)
       if (!process.env.NEXT_PUBLIC_API_URL) {

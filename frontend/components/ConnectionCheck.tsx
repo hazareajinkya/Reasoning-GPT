@@ -8,7 +8,11 @@ export default function ConnectionCheck() {
 
   useEffect(() => {
     const checkBackend = async () => {
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+      let API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+      // Ensure URL has protocol (add https:// if missing)
+      if (API_URL && !API_URL.startsWith("http://") && !API_URL.startsWith("https://")) {
+        API_URL = `https://${API_URL}`;
+      }
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
       
