@@ -21,6 +21,11 @@ export default function Home() {
       // Get backend URL from environment variable or use localhost for development
       const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
       
+      // Log for debugging (remove in production if needed)
+      if (!process.env.NEXT_PUBLIC_API_URL) {
+        console.warn("NEXT_PUBLIC_API_URL not set, using localhost. Set this in Vercel environment variables!");
+      }
+      
       // Test backend connectivity first
       try {
         const healthCheck = await fetch(`${API_URL}/health`, { method: "GET" });

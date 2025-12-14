@@ -174,12 +174,22 @@ def health():
     embed_key_set = bool(os.environ.get("EMBED_API_KEY"))
     llm_key_set = bool(os.environ.get("LLM_API_KEY"))
     
+    try:
+        items_count = len(ITEMS) if ITEMS else 0
+        store_loaded = STORE.index.ntotal > 0 if hasattr(STORE, 'index') and hasattr(STORE.index, 'ntotal') else False
+        store_exists = STORE_PATH.exists() if STORE_PATH else False
+    except Exception as e:
+        # If there's an error accessing store, return safe defaults
+        items_count = 0
+        store_loaded = False
+        store_exists = False
+    
     return {
         "status": "ok", 
-        "items": len(ITEMS),
-        "store_loaded": STORE.index.ntotal > 0 if hasattr(STORE, 'index') else False,
-        "vector_store_path": str(STORE_PATH),
-        "vector_store_exists": STORE_PATH.exists(),
+        "items": items_count,
+        "store_loaded": store_loaded,
+        "vector_store_path": str(STORE_PATH) if STORE_PATH else "unknown",
+        "vector_store_exists": store_exists,
         "api_keys_configured": embed_key_set and llm_key_set,
         "embed_api_key_set": embed_key_set,
         "llm_api_key_set": llm_key_set,
