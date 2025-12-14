@@ -66,8 +66,8 @@ export default function SolutionDisplay({ solution }: SolutionDisplayProps) {
     let cleanedText = text;
     
     // Pattern to match: table: ['line1', 'line2', ...] or ping_table: ['...'] 
-    // Handles both single-line and multi-line array formats (non-greedy with s flag for newlines)
-    const arrayPattern = /(\w+_?table|table):\s*\[([^\]]*)\]/gs;
+    // Handles both single-line and multi-line array formats ([\s\S] matches any character including newlines)
+    const arrayPattern = /(\w+_?table|table):\s*\[([^\]]*)\]/g;
     
     // Extract labeled tables (table: [...], ping_table: [...])
     const matches: Array<{ match: string; arrayContent: string; index: number }> = [];
