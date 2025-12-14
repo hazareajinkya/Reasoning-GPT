@@ -21,9 +21,20 @@ DATA_PATH = PROJECT_ROOT / "data" / "seed_dilr.jsonl"
 MODEL_URL = os.environ.get("LLM_API_URL")
 MODEL_KEY = os.environ.get("LLM_API_KEY")
 
-# Ensure MODEL_URL has protocol
-if MODEL_URL and not MODEL_URL.startswith("http://") and not MODEL_URL.startswith("https://"):
-    MODEL_URL = f"https://{MODEL_URL}"
+# Debug: Log the raw environment variable (mask the key part)
+if MODEL_URL:
+    print(f"DEBUG: Raw LLM_API_URL from env: '{MODEL_URL}' (length: {len(MODEL_URL)})")
+    # Show first and last 20 chars to see if there are hidden characters
+    if len(MODEL_URL) > 40:
+        print(f"DEBUG: First 20 chars: '{MODEL_URL[:20]}' | Last 20 chars: '{MODEL_URL[-20:]}'")
+
+# Ensure MODEL_URL has protocol (but don't modify the original, we'll clean it in call_llm)
+# Actually, let's clean it here too to be safe
+if MODEL_URL:
+    MODEL_URL = MODEL_URL.strip()
+    # Remove any leading = or spaces
+    while MODEL_URL.startswith(("=", " ")):
+        MODEL_URL = MODEL_URL[1:].strip()
 
 app = FastAPI(title="DILR Reasoning Explainer")
 
@@ -167,25 +178,32 @@ def call_llm(prompt: str) -> Dict[str, Any]:
     # Clean and validate URL (handle common formatting issues)
     api_url = MODEL_URL.strip() if MODEL_URL else ""
     
+    # Debug: Log before cleaning
+    print(f"DEBUG call_llm: Raw MODEL_URL: '{MODEL_URL}' -> api_url before clean: '{api_url}'")
+    
     # Remove any leading/trailing whitespace, equals signs, quotes, or other formatting issues
     api_url = api_url.strip()
-    # Remove leading =, spaces, quotes
-    while api_url.startswith(("=", " ", "'", '"')):
+    # Remove leading =, spaces, quotes, and any other weird characters
+    while api_url and api_url[0] in ("=", " ", "'", '"', "\t", "\n", "\r"):
         api_url = api_url[1:].strip()
     # Remove trailing =, spaces, quotes
-    while api_url.endswith(("=", " ", "'", '"')):
+    while api_url and api_url[-1] in ("=", " ", "'", '"', "\t", "\n", "\r"):
         api_url = api_url[:-1].strip()
+    
+    # Debug: Log after cleaning
+    print(f"DEBUG call_llm: After cleaning: '{api_url}'")
     
     # Only add https:// if it doesn't already have a protocol
     if api_url and not api_url.startswith("http://") and not api_url.startswith("https://"):
         api_url = f"https://{api_url}"
+        print(f"DEBUG call_llm: Added https:// -> '{api_url}'")
     
     # Final validation
     if not api_url or (not api_url.startswith("http://") and not api_url.startswith("https://")):
         raise HTTPException(500, f"Invalid LLM_API_URL format: '{MODEL_URL}' (cleaned: '{api_url}'). Must be a valid URL starting with http:// or https://")
     
-    # Log the cleaned URL for debugging (remove in production if needed)
-    print(f"Using LLM API URL: {api_url}")
+    # Log the final URL for debugging
+    print(f"DEBUG call_llm: Final API URL: '{api_url}'")
     
     headers = {"Authorization": f"Bearer {MODEL_KEY}"}
     
