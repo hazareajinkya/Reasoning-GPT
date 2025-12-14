@@ -165,9 +165,13 @@ def call_llm(prompt: str) -> Dict[str, Any]:
         raise HTTPException(500, "Set LLM_API_URL and LLM_API_KEY environment variables.")
     
     # Ensure URL has protocol
-    api_url = MODEL_URL
+    api_url = MODEL_URL.strip()
     if api_url and not api_url.startswith("http://") and not api_url.startswith("https://"):
         api_url = f"https://{api_url}"
+    
+    # Validate URL format
+    if not api_url.startswith("http://") and not api_url.startswith("https://"):
+        raise HTTPException(500, f"Invalid LLM_API_URL format: '{MODEL_URL}'. Must start with http:// or https://")
     
     headers = {"Authorization": f"Bearer {MODEL_KEY}"}
     
@@ -194,6 +198,16 @@ def call_llm(prompt: str) -> Dict[str, Any]:
         resp = httpx.post(api_url, headers=headers, json=payload, timeout=180)  # Increased timeout for longer responses
         resp.raise_for_status()
         data = resp.json()
+    except httpx.ConnectError as e:
+        raise HTTPException(500, f"Failed to connect to LLM API at {api_url}. Check LLM_API_URL is correct. Error: {str(e)}")
+    except httpx.HTTPStatusError as e:
+        error_msg = f"LLM API error: {e.response.status_code}"
+        try:
+            error_detail = e.response.json().get("error", {}).get("message", e.response.text[:200])
+            error_msg += f" - {error_detail}"
+        except:
+            error_msg += f" - {e.response.text[:200]}"
+        raise HTTPException(e.response.status_code, error_msg)
         
         # Extract content from response
         if "choices" in data:
