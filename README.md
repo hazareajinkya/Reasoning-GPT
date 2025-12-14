@@ -106,16 +106,10 @@ python3 scripts/review_extractions.py
 
 ## Screenshots
 
-![Application Interface](docs/screenshots/homepage.png)
-*Main application interface showing problem input and solution display*
-
-![Step-by-Step Solution](docs/screenshots/solution-step-by-step.png)
-*Detailed step-by-step solution with progressive tables*
-
-![Solution Views](docs/screenshots/solution-views.png)
-*Multiple solution approaches: Direct, Step-by-Step, Intuitive, and Shortcut*
-
-> 📸 **Note**: Add your screenshots to the `docs/screenshots/` folder. See [docs/screenshots/README.md](docs/screenshots/README.md) for naming conventions.
+![Homepage](docs/screenshots/homepage.png)
+![Problem Input](docs/screenshots/problem-input.png)
+![Approach](docs/screenshots/approach.png)
+![Final Output](docs/screenshots/final-output.png)
 
 ## Current Status
 
