@@ -23,19 +23,21 @@ MODEL_KEY = os.environ.get("LLM_API_KEY")
 app = FastAPI(title="DILR Reasoning Explainer")
 
 # Add CORS middleware
-# Allow all origins in production (you can restrict this to specific domains)
-# For production, consider restricting to your Vercel domain:
-# allow_origins=["https://your-app.vercel.app", "http://localhost:3000"]
-cors_origins = os.environ.get("CORS_ORIGINS", "*")
+# When allow_credentials=True, cannot use allow_origins=["*"]
+# Must specify exact origins
+cors_origins = os.environ.get("CORS_ORIGINS", "https://reasoning-gpt.vercel.app,http://localhost:3000,http://localhost:3001")
 if cors_origins == "*":
+    # If wildcard is explicitly set, disable credentials (CORS spec requirement)
     allow_origins = ["*"]
+    allow_creds = False
 else:
     allow_origins = [origin.strip() for origin in cors_origins.split(",")]
+    allow_creds = True
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allow_origins,
-    allow_credentials=True,
+    allow_credentials=allow_creds,
     allow_methods=["*"],
     allow_headers=["*"],
     expose_headers=["*"],
