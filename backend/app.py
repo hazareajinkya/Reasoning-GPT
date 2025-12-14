@@ -93,16 +93,32 @@ def load_store() -> tuple[VectorStore, List[dict]]:
     """Load vector store from pickle file, or build from JSONL if not exists."""
     if STORE_PATH.exists():
         print(f"Loading vector store from {STORE_PATH}...")
-        with open(STORE_PATH, "rb") as f:
-            data = pickle.load(f)
-            return data["store"], data["items"]
+        try:
+            with open(STORE_PATH, "rb") as f:
+                data = pickle.load(f)
+                store = data.get("store")
+                items = data.get("items", [])
+                
+                # Check if store is actually populated
+                if store and hasattr(store, 'index') and hasattr(store.index, 'ntotal'):
+                    if store.index.ntotal > 0 and len(items) > 0:
+                        print(f"Successfully loaded vector store with {store.index.ntotal} items")
+                        return store, items
+                    else:
+                        print(f"Warning: Vector store file exists but is empty (ntotal={store.index.ntotal}, items={len(items)}). Rebuilding from JSONL...")
+                else:
+                    print(f"Warning: Vector store file exists but structure is invalid. Rebuilding from JSONL...")
+        except Exception as e:
+            print(f"Error loading vector store: {e}. Rebuilding from JSONL...")
     
     # Fallback: build from JSONL (slower, but works)
-    print(f"Vector store not found. Building from {DATA_PATH}...")
+    print(f"Building vector store from {DATA_PATH}...")
     items = load_jsonl(DATA_PATH) if DATA_PATH.exists() else []
     if not items:
+        print(f"Warning: No JSONL data found at {DATA_PATH}")
         return VectorStore(dim=1), []
     
+    print(f"Found {len(items)} items in JSONL. Building embeddings...")
     from retrieval.embed import embed
     texts = []
     for it in items:
@@ -115,10 +131,12 @@ def load_store() -> tuple[VectorStore, List[dict]]:
         text += f"Shortcut: {solutions.get('shortcut', '')}"
         texts.append(text)
     
+    print("Generating embeddings...")
     embeddings = embed(texts)
     dim = len(embeddings[0])
     store = VectorStore(dim)
     store.add(embeddings, items)
+    print(f"Successfully built vector store with {store.index.ntotal} items")
     return store, items
 
 
