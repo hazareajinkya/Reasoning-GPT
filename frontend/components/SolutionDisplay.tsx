@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, ReactElement } from "react";
 
 interface SolutionDisplayProps {
   solution: {
@@ -144,7 +144,7 @@ export default function SolutionDisplay({ solution }: SolutionDisplayProps) {
   };
 
   // Parse ASCII table and convert to HTML table
-  const parseAsciiTable = (tableLines: string[]): JSX.Element | null => {
+  const parseAsciiTable = (tableLines: string[]): ReactElement | null => {
     if (tableLines.length < 2) return null;
 
     // Find separator lines (lines with + and -)
@@ -316,7 +316,7 @@ export default function SolutionDisplay({ solution }: SolutionDisplayProps) {
     }
 
     // Group consecutive table lines together and convert to HTML tables
-    const elements: JSX.Element[] = [];
+    const elements: ReactElement[] = [];
     let tableLines: string[] = [];
     let lineIdx = 0;
 
