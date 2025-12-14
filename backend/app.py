@@ -187,7 +187,7 @@ def call_llm(prompt: str) -> Dict[str, Any]:
     }
     
     # Add JSON mode for OpenAI-compatible APIs
-    if "openai" in MODEL_URL.lower() or "api.openai.com" in MODEL_URL:
+    if "openai" in api_url.lower() or "api.openai.com" in api_url:
         payload["response_format"] = {"type": "json_object"}
     
     try:
