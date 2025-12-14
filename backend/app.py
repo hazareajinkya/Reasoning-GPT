@@ -21,6 +21,10 @@ DATA_PATH = PROJECT_ROOT / "data" / "seed_dilr.jsonl"
 MODEL_URL = os.environ.get("LLM_API_URL")
 MODEL_KEY = os.environ.get("LLM_API_KEY")
 
+# Ensure MODEL_URL has protocol
+if MODEL_URL and not MODEL_URL.startswith("http://") and not MODEL_URL.startswith("https://"):
+    MODEL_URL = f"https://{MODEL_URL}"
+
 app = FastAPI(title="DILR Reasoning Explainer")
 
 # Add CORS middleware
@@ -160,6 +164,11 @@ def call_llm(prompt: str) -> Dict[str, Any]:
     if not MODEL_URL or not MODEL_KEY:
         raise HTTPException(500, "Set LLM_API_URL and LLM_API_KEY environment variables.")
     
+    # Ensure URL has protocol
+    api_url = MODEL_URL
+    if api_url and not api_url.startswith("http://") and not api_url.startswith("https://"):
+        api_url = f"https://{api_url}"
+    
     headers = {"Authorization": f"Bearer {MODEL_KEY}"}
     
     # Detect provider from URL or use default
@@ -182,7 +191,7 @@ def call_llm(prompt: str) -> Dict[str, Any]:
         payload["response_format"] = {"type": "json_object"}
     
     try:
-        resp = httpx.post(MODEL_URL, headers=headers, json=payload, timeout=180)  # Increased timeout for longer responses
+        resp = httpx.post(api_url, headers=headers, json=payload, timeout=180)  # Increased timeout for longer responses
         resp.raise_for_status()
         data = resp.json()
         
