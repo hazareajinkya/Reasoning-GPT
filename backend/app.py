@@ -23,14 +23,18 @@ MODEL_KEY = os.environ.get("LLM_API_KEY")
 app = FastAPI(title="DILR Reasoning Explainer")
 
 # Add CORS middleware
+# Allow all origins in production (you can restrict this to specific domains)
+# For production, consider restricting to your Vercel domain:
+# allow_origins=["https://your-app.vercel.app", "http://localhost:3000"]
+cors_origins = os.environ.get("CORS_ORIGINS", "*").split(",")
+if cors_origins == ["*"]:
+    allow_origins = ["*"]
+else:
+    allow_origins = [origin.strip() for origin in cors_origins]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://localhost:3001",
-        "http://127.0.0.1:3000",
-        "http://127.0.0.1:3001",
-    ],
+    allow_origins=allow_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
