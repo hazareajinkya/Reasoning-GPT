@@ -1,0 +1,90 @@
+# Environment variables and API keys
+.env
+.env.local
+.env.*.local
+*.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+venv/
+ENV/
+env/
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Next.js
+frontend/.next/
+frontend/out/
+frontend/build/
+frontend/.vercel
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Large data files (videos, frames, generated data)
+data/raw/frames/
+data/raw/videos/
+data/drafts/
+data/drafts_test/
+*.mp4
+*.avi
+*.mov
+
+# Vector store (can be regenerated, but large)
+# Uncomment if you want to exclude it:
+# data/vector_store*.pkl
+
+# Test files with API keys
+# test_api_simple.py  # Contains test key - will be fixed
+
+# Temporary files
+*.tmp
+*.temp
+*.part
+
+# Build artifacts
+*.pyc
+*.pyo
+*.pyd
+

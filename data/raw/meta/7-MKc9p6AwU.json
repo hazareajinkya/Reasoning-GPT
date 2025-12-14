@@ -1,0 +1,60 @@
+{
+  "url": "https://www.youtube.com/watch?v=7-MKc9p6AwU",
+  "video_path": "/Users/ajinkya642000/Desktop/Reasoning GPT/data/raw/videos/7-MKc9p6AwU.mp4",
+  "frames_dir": "/Users/ajinkya642000/Desktop/Reasoning GPT/data/raw/frames/7-MKc9p6AwU",
+  "transcript": {
+    "url": "https://www.youtube.com/watch?v=7-MKc9p6AwU",
+    "language": "en",
+    "tracks": [
+      {
+        "ext": "json3",
+        "url": "https://www.youtube.com/api/timedtext?v=7-MKc9p6AwU&ei=Qoo5aaGFHezTpt8PiaibiAM&caps=asr&opi=112496729&xoaf=5&xowf=1&hl=en&ip=0.0.0.0&ipbits=0&expire=1765403826&sparams=ip%2Cipbits%2Cexpire%2Cv%2Cei%2Ccaps%2Copi%2Cxoaf&signature=995B6710415E12C6B12CE1EFD5864E473A5D17DC.E587F5E9CD17E823B4433F15C7337AAECAFB35AE&key=yt8&kind=asr&lang=en&fmt=json3",
+        "name": "English",
+        "impersonate": true,
+        "__yt_dlp_client": "android_sdkless"
+      },
+      {
+        "ext": "srv1",
+        "url": "https://www.youtube.com/api/timedtext?v=7-MKc9p6AwU&ei=Qoo5aaGFHezTpt8PiaibiAM&caps=asr&opi=112496729&xoaf=5&xowf=1&hl=en&ip=0.0.0.0&ipbits=0&expire=1765403826&sparams=ip%2Cipbits%2Cexpire%2Cv%2Cei%2Ccaps%2Copi%2Cxoaf&signature=995B6710415E12C6B12CE1EFD5864E473A5D17DC.E587F5E9CD17E823B4433F15C7337AAECAFB35AE&key=yt8&kind=asr&lang=en&fmt=srv1",
+        "name": "English",
+        "impersonate": true,
+        "__yt_dlp_client": "android_sdkless"
+      },
+      {
+        "ext": "srv2",
+        "url": "https://www.youtube.com/api/timedtext?v=7-MKc9p6AwU&ei=Qoo5aaGFHezTpt8PiaibiAM&caps=asr&opi=112496729&xoaf=5&xowf=1&hl=en&ip=0.0.0.0&ipbits=0&expire=1765403826&sparams=ip%2Cipbits%2Cexpire%2Cv%2Cei%2Ccaps%2Copi%2Cxoaf&signature=995B6710415E12C6B12CE1EFD5864E473A5D17DC.E587F5E9CD17E823B4433F15C7337AAECAFB35AE&key=yt8&kind=asr&lang=en&fmt=srv2",
+        "name": "English",
+        "impersonate": true,
+        "__yt_dlp_client": "android_sdkless"
+      },
+      {
+        "ext": "srv3",
+        "url": "https://www.youtube.com/api/timedtext?v=7-MKc9p6AwU&ei=Qoo5aaGFHezTpt8PiaibiAM&caps=asr&opi=112496729&xoaf=5&xowf=1&hl=en&ip=0.0.0.0&ipbits=0&expire=1765403826&sparams=ip%2Cipbits%2Cexpire%2Cv%2Cei%2Ccaps%2Copi%2Cxoaf&signature=995B6710415E12C6B12CE1EFD5864E473A5D17DC.E587F5E9CD17E823B4433F15C7337AAECAFB35AE&key=yt8&kind=asr&lang=en&fmt=srv3",
+        "name": "English",
+        "impersonate": true,
+        "__yt_dlp_client": "android_sdkless"
+      },
+      {
+        "ext": "ttml",
+        "url": "https://www.youtube.com/api/timedtext?v=7-MKc9p6AwU&ei=Qoo5aaGFHezTpt8PiaibiAM&caps=asr&opi=112496729&xoaf=5&xowf=1&hl=en&ip=0.0.0.0&ipbits=0&expire=1765403826&sparams=ip%2Cipbits%2Cexpire%2Cv%2Cei%2Ccaps%2Copi%2Cxoaf&signature=995B6710415E12C6B12CE1EFD5864E473A5D17DC.E587F5E9CD17E823B4433F15C7337AAECAFB35AE&key=yt8&kind=asr&lang=en&fmt=ttml",
+        "name": "English",
+        "impersonate": true,
+        "__yt_dlp_client": "android_sdkless"
+      },
+      {
+        "ext": "srt",
+        "url": "https://www.youtube.com/api/timedtext?v=7-MKc9p6AwU&ei=Qoo5aaGFHezTpt8PiaibiAM&caps=asr&opi=112496729&xoaf=5&xowf=1&hl=en&ip=0.0.0.0&ipbits=0&expire=1765403826&sparams=ip%2Cipbits%2Cexpire%2Cv%2Cei%2Ccaps%2Copi%2Cxoaf&signature=995B6710415E12C6B12CE1EFD5864E473A5D17DC.E587F5E9CD17E823B4433F15C7337AAECAFB35AE&key=yt8&kind=asr&lang=en&fmt=srt",
+        "name": "English",
+        "impersonate": true,
+        "__yt_dlp_client": "android_sdkless"
+      },
+      {
+        "ext": "vtt",
+        "url": "https://www.youtube.com/api/timedtext?v=7-MKc9p6AwU&ei=Qoo5aaGFHezTpt8PiaibiAM&caps=asr&opi=112496729&xoaf=5&xowf=1&hl=en&ip=0.0.0.0&ipbits=0&expire=1765403826&sparams=ip%2Cipbits%2Cexpire%2Cv%2Cei%2Ccaps%2Copi%2Cxoaf&signature=995B6710415E12C6B12CE1EFD5864E473A5D17DC.E587F5E9CD17E823B4433F15C7337AAECAFB35AE&key=yt8&kind=asr&lang=en&fmt=vtt",
+        "name": "English",
+        "impersonate": true,
+        "__yt_dlp_client": "android_sdkless"
+      }
+    ]
+  }
+}

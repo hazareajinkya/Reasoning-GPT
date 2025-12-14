@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+httpx
+python-dotenv
+yt-dlp
+pydantic
+numpy
+faiss-cpu
+
