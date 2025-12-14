@@ -164,19 +164,28 @@ def call_llm(prompt: str) -> Dict[str, Any]:
     if not MODEL_URL or not MODEL_KEY:
         raise HTTPException(500, "Set LLM_API_URL and LLM_API_KEY environment variables.")
     
-    # Ensure URL has protocol (strip whitespace and fix common issues)
+    # Clean and validate URL (handle common formatting issues)
     api_url = MODEL_URL.strip() if MODEL_URL else ""
     
-    # Remove any leading/trailing whitespace, equals signs, or other formatting issues
-    api_url = api_url.strip().lstrip("=").strip()
+    # Remove any leading/trailing whitespace, equals signs, quotes, or other formatting issues
+    api_url = api_url.strip()
+    # Remove leading =, spaces, quotes
+    while api_url.startswith(("=", " ", "'", '"')):
+        api_url = api_url[1:].strip()
+    # Remove trailing =, spaces, quotes
+    while api_url.endswith(("=", " ", "'", '"')):
+        api_url = api_url[:-1].strip()
     
     # Only add https:// if it doesn't already have a protocol
     if api_url and not api_url.startswith("http://") and not api_url.startswith("https://"):
         api_url = f"https://{api_url}"
     
-    # Validate URL format
+    # Final validation
     if not api_url or (not api_url.startswith("http://") and not api_url.startswith("https://")):
-        raise HTTPException(500, f"Invalid LLM_API_URL format: '{MODEL_URL}'. Must be a valid URL starting with http:// or https://")
+        raise HTTPException(500, f"Invalid LLM_API_URL format: '{MODEL_URL}' (cleaned: '{api_url}'). Must be a valid URL starting with http:// or https://")
+    
+    # Log the cleaned URL for debugging (remove in production if needed)
+    print(f"Using LLM API URL: {api_url}")
     
     headers = {"Authorization": f"Bearer {MODEL_KEY}"}
     
