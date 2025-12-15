@@ -9,6 +9,7 @@ interface SolutionDisplayProps {
     intuitive: string;
     shortcut: string;
     retrieved_ids?: string[];
+    reference_videos?: Array<{ id: string; url: string; title: string }>;
   };
 }
 
@@ -470,6 +471,63 @@ export default function SolutionDisplay({ solution }: SolutionDisplayProps) {
             {formatText(solution[activeTab])}
           </div>
         </div>
+
+        {/* Reference Videos */}
+        {solution.reference_videos && solution.reference_videos.length > 0 && (
+          <div className="mt-6 pt-6 border-t border-slate-950/40">
+            <p className="text-sm text-slate-400 mb-3 font-medium">📹 Reference Videos & Solutions:</p>
+            <div className="flex flex-col gap-2">
+              {solution.reference_videos.map((video, idx) => (
+                <a
+                  key={idx}
+                  href={video.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 px-4 py-3 bg-slate-800/50 hover:bg-slate-800/70 rounded-lg border border-slate-700/50 hover:border-blue-500/50 transition-all duration-200 group"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="text-red-400 group-hover:text-red-300 flex-shrink-0"
+                  >
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                  </svg>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm text-slate-200 group-hover:text-white font-medium truncate">
+                      {video.title}
+                    </p>
+                    <p className="text-xs text-slate-400 truncate">
+                      {video.url}
+                    </p>
+                  </div>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="text-slate-400 group-hover:text-blue-400 flex-shrink-0"
+                  >
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                    <polyline points="15 3 21 3 21 9"></polyline>
+                    <line x1="10" y1="14" x2="21" y2="3"></line>
+                  </svg>
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Retrieved IDs */}
         {solution.retrieved_ids && solution.retrieved_ids.length > 0 && (

@@ -1,7 +1,7 @@
 import os
 import pickle
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 import httpx
 from fastapi import FastAPI, HTTPException, Request
@@ -102,6 +102,7 @@ class SolveResponse(BaseModel):
     intuitive: str
     shortcut: str
     retrieved_ids: List[str]
+    reference_videos: List[Dict[str, str]] = []  # List of {id, url, title} dicts
 
 
 def load_store() -> tuple[VectorStore, List[dict]]:
@@ -168,6 +169,126 @@ def load_store() -> tuple[VectorStore, List[dict]]:
 
 
 STORE, ITEMS = load_store()
+
+
+def get_video_url_from_source(source: str, context_id: str = "") -> Optional[str]:
+    """
+    Map source identifier to YouTube video URL.
+    Checks if a video metadata file exists for the source.
+    Also tries to extract video ID from context_id if it contains video references.
+    """
+    if not source:
+        return None
+    
+    # Try to find video metadata file
+    meta_dir = PROJECT_ROOT / "data" / "raw" / "meta"
+    if not meta_dir.exists():
+        return None
+    
+    # Check if source is a video ID (11 characters, YouTube format)
+    if len(source) == 11 and source.replace('-', '').replace('_', '').isalnum():
+        meta_file = meta_dir / f"{source}.json"
+        if meta_file.exists():
+            try:
+                import json
+                with open(meta_file, 'r') as f:
+                    meta = json.load(f)
+                    return meta.get('url')
+            except Exception:
+                pass
+    
+    # Check if context_id contains a video ID pattern
+    if context_id:
+        import re
+        # Look for YouTube video ID pattern in context_id
+        video_id_match = re.search(r'[a-zA-Z0-9_-]{11}', context_id)
+        if video_id_match:
+            potential_id = video_id_match.group(0)
+            meta_file = meta_dir / f"{potential_id}.json"
+            if meta_file.exists():
+                try:
+                    import json
+                    with open(meta_file, 'r') as f:
+                        meta = json.load(f)
+                        return meta.get('url')
+                except Exception:
+                    pass
+    
+    # Check all metadata files for matching source
+    for meta_file in meta_dir.glob("*.json"):
+        try:
+            import json
+            with open(meta_file, 'r') as f:
+                meta = json.load(f)
+                url = meta.get('url', '')
+                # Extract video ID from URL
+                if 'youtube.com/watch?v=' in url:
+                    video_id = url.split('v=')[1].split('&')[0]
+                    # If source matches video ID or is in the filename
+                    if source == video_id or source in meta_file.stem:
+                        return url
+                    # Also check if context_id contains this video ID
+                    if context_id and video_id in context_id:
+                        return url
+        except Exception:
+            continue
+    
+    # If source is a known dataset name, try to map to common videos
+    # This is a fallback for cases where source is like "lrdi" or "lrdi_6hour"
+    source_lower = source.lower()
+    if 'lrdi' in source_lower or 'dilr' in source_lower:
+        # Try to find any LRDI-related video
+        for meta_file in meta_dir.glob("*.json"):
+            try:
+                import json
+                with open(meta_file, 'r') as f:
+                    meta = json.load(f)
+                    url = meta.get('url', '')
+                    if url:
+                        # Return first matching video URL (can be improved with better mapping)
+                        return url
+            except Exception:
+                continue
+    
+    return None
+
+
+def extract_reference_videos(contexts: List[dict]) -> List[Dict[str, str]]:
+    """
+    Extract video URLs from retrieved contexts.
+    Returns list of {id, url, title} dictionaries.
+    """
+    videos = []
+    seen_urls = set()
+    
+    for ctx in contexts:
+        source = ctx.get('source', '')
+        context_id = ctx.get('id', '')
+        
+        # Try to get video URL from source or context_id
+        video_url = get_video_url_from_source(source, context_id)
+        if video_url and video_url not in seen_urls:
+            seen_urls.add(video_url)
+            # Extract video ID from URL
+            video_id = None
+            if 'youtube.com/watch?v=' in video_url:
+                video_id = video_url.split('v=')[1].split('&')[0]
+            
+            # Create a descriptive title
+            puzzle_type = ctx.get('puzzle_type', '')
+            title = f"Reference Solution"
+            if puzzle_type:
+                title += f" - {puzzle_type}"
+            elif source:
+                title += f" - {source}"
+            
+            videos.append({
+                "id": video_id or source or context_id,
+                "url": video_url,
+                "title": title
+            })
+    
+    return videos
 
 
 def call_llm(prompt: str) -> Dict[str, Any]:
@@ -447,11 +568,15 @@ def solve(req: SolveRequest):
     # Post-process step_by_step to add tables if missing
     step_by_step = generate_table_for_problem(req.question, step_by_step_raw)
     
+    # Extract reference videos from contexts
+    reference_videos = extract_reference_videos(contexts)
+    
     return {
         "direct": direct,
         "step_by_step": step_by_step,
         "intuitive": intuitive,
         "shortcut": shortcut,
         "retrieved_ids": [c.get("id", "unknown") for c in contexts],
+        "reference_videos": reference_videos,
     }
 
