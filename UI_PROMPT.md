@@ -124,3 +124,4 @@ Create a beautiful, modern UI that:
 - Follows the dark theme consistently
 - Makes the learning experience enjoyable
 
+

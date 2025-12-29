@@ -1,0 +1,32 @@
+Day 5 / 7 - A personal challenge - 7 days. 7 projects.
+Project 5: Reasoning GPT 🧠
+
+The Problem (A Personal Story):
+For those who don't know, the DILR (Data Interpretation & Logical Reasoning) section in CAT is brutal. It’s not just math; it’s pure puzzle-solving under pressure.
+
+As a past CAT aspirant who improved my DILR score from 82%ile to 97%ile (and even received an offer from IIM Indore back then—which I politely declined for another path!), I realized that the *method* matters more than just the answer.
+
+When I gave new, unsolved DILR questions to standard LLMs (ChatGPT, Gemini, Claude), they often struggled to solve them with an "easy," student-friendly approach. They gave answers, but not the *reasoning* a student needs to learn.
+
+The Solution:
+So I built Reasoning GPT – a custom RAG pipeline designed to not just solve DILR problems, but to help students actually develop their reasoning skills.
+
+It goes beyond just outputting an answer. It explains the logic, breaks it down step-by-step, and helps build the intuition needed to tackle similar problems in the future.
+
+How it works (The Engineering Under the Hood ⚙️):
+1. **Multimodal RAG Ingestion:** Built a specialized ETL pipeline to construct a proprietary **Knowledge Base**. It extracts visual logic from video frames and syncs it with transcripts to create a dense "reasoning index" that standard LLMs lack.
+2. **Dense Vector Retrieval:** Implemented a high-performance retrieval layer (using FAISS) to fetch relevant context. It searches the **latent space** for problem archetypes with similar *logic structures*, ensuring high recall for specific reasoning patterns.
+3. **Context-Augmented Generation:** Uses **Few-Shot RAG** to dynamically inject expert "thought traces" into the **LLM's context window**. This **Chain-of-Thought (CoT)** prompting forces the model to align with the expert's reasoning style: Intuition → Tabular Breakdown → Final Shortcut.
+4. **Automated Table Generation:** A specialized post-processing layer detects the problem type (Circular Track, Matrix, Venn Diagram) and enforces a clean, markdown-based tabular format for the solution—crucial for DILR.
+
+It’s effectively capturing the guided problem-solving approach of an expert mentor and making it available on demand.
+
+Tech Stack: Next.js · FastAPI · Python · Custom RAG Pipeline · FAISS (Vector Search) · OpenAI API · Tailwind CSS
+
+(Special thanks to Emergent for helping me whip up this aesthetic frontend! 🎨 It really makes the complex logic look clean and approachable.)
+
+Honesty time: I didn't build this entirely in one day. I started hacking on the core RAG pipeline on Day 4 because the idea of building a reasoning model for students was too exciting to wait. This one is genuinely special to me.
+
+Let's move to Day 6! 🚀
+
+Disclaimer: Personal learning side project, built independently in personal time using only personal resources.

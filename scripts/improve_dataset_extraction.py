@@ -35,3 +35,4 @@ Return JSON with: question, answer, solutions (direct, step_by_step with tables,
 # For now, it's a reference for what needs to be done
 
 
+
