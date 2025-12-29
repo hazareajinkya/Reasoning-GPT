@@ -404,8 +404,14 @@ def call_llm(prompt: str) -> Dict[str, Any]:
             # If not JSON, return as dict with content in all fields
             return {"direct": content, "step_by_step": content, "intuitive": content, "shortcut": content}
     
-    # Fallback: return data as-is if no choices
-    return data
+    # Fallback: if no choices, return empty dict with error message
+    print(f"WARNING: No 'choices' in LLM response. Response structure: {list(data.keys()) if isinstance(data, dict) else type(data)}")
+    return {
+        "direct": "Error: LLM response did not contain expected format.",
+        "step_by_step": f"Raw response: {str(data)[:500]}",
+        "intuitive": "Please check LLM_API_URL and LLM_MODEL configuration.",
+        "shortcut": ""
+    }
 
 
 @app.get("/")
@@ -520,6 +526,10 @@ def solve(req: SolveRequest):
             raise
         except Exception as e:
             raise HTTPException(500, f"LLM call failed: {str(e)}")
+    
+    # Check if llm_res is valid
+    if not llm_res or not isinstance(llm_res, dict):
+        raise HTTPException(500, f"Invalid LLM response format. Expected dict, got: {type(llm_res)}. Response: {str(llm_res)[:500]}")
     
     # Ensure all response fields are strings (handle dicts/lists from LLM)
     def ensure_string(value, default=""):
